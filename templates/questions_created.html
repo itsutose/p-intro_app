@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Questions</title>
+    <!-- jQuery UIのCSSを追加 -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+    <h1>設問を作成</h1>
+    <!-- エラー表示はそのまま -->
+
+    <form id="questionsForm" action="/create-questions" method="post">
+        <div id="questionsContainer">
+            <!-- 既存の質問を表示する -->
+            {% for text, count in existing_questions.items() %}
+                <div class="question-group" draggable="true">
+                    <label>質問文:</label>
+                    <textarea name="question_text[]" rows="5" cols="75" required>{{ text }}</textarea>
+                    <label>設問名:</label>
+                    <input type="text" name="question_name[]" value="{{ existing_names[existing_numbers[text]] }}" required>
+                    <label>回答欄の数:</label>
+                    <input type="number" name="answer_count[]" min="1" value="{{ count }}" required>
+                    <button type="button" class="delete-question">削除</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" onclick="addQuestion()">質問を追加</button>
+        <input type="submit" value="設問セットを作成">
+    </form>
+
+    <!-- jQueryとjQuery UIのJSを追加 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        function addQuestion() {
+            const container = document.getElementById('questionsContainer');
+            const questionGroup = document.createElement('div');
+            questionGroup.classList.add('question-group');
+            questionGroup.setAttribute('draggable', 'true');
+            questionGroup.innerHTML = `
+                <label>質問文:</label>
+                <textarea name="question_text[]" rows="5" cols="75" required></textarea>
+                <label>設問名:</label>
+                <input type="text" name="question_name[]" required>
+                <label>回答欄の数:</label>
+                <input type="number" name="answer_count[]" min="1" required>
+                <button type="button" class="delete-question">削除</button>
+            `;
+            container.appendChild(questionGroup);
+            
+            // 削除ボタンにイベントハンドラを設定
+            questionGroup.querySelector('.delete-question').addEventListener('click', function() {
+                questionGroup.remove();
+            });
+        }
+
+        // 既存の質問の削除ボタンにイベントハンドラを設定
+        document.querySelectorAll('.delete-question').forEach(function(button) {
+            button.addEventListener('click', function() {
+                button.parentElement.remove();
+            });
+        });
+
+        $(function() {
+            $("#questionsContainer").sortable();
+            $("#questionsContainer").disableSelection();
+        });
+    </script>
+</body>
+</html>

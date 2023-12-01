@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生の回答</title>
+</head>
+<body>
+    <h2>学生の回答一覧</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>学籍番号</th>
+                <th>名前</th>
+                <!-- 設問番号のヘッダーを動的に作成 -->
+                {% for i in range(1, 13) %} <!-- 12は設問の最大数。適切な値に変更する必要があります -->
+                <th>課題{{ i }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- データを動的に表示 -->
+            {% for (student_id, name), scores in table_data.items() %}
+            <tr>
+                <td>{{ student_id }}</td>
+                <td>{{ name }}</td>
+                {% for i in range(1, 13) %}
+                <td>{{ scores.get(i, '') }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

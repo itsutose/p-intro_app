@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document with Navbar Dropdown on Hover</title>
+
+
+    <!-- Uploadされたファイルのみかすべてのファイルかを切り替えるボタン -->
+    <!-- 必要に応じてCSSやJavaScriptのリンクを挿入 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // すべての学生を表示する
+            $('#show-all').click(function() {
+                $('tbody tr').css('display', 'table-row'); // tbody内の全ての行をtable-rowとして表示
+            });
+
+            // アップロードされた学生のみを表示する
+            $('#show-uploaded').click(function() {
+                $('tbody tr').css('display', 'none'); // tbody内の一旦すべての行を非表示にする
+                $('tbody tr.uploaded').css('display', 'table-row'); // tbody内のアップロード済みの行のみtable-rowとして表示
+            });
+        });
+
+        
+    </script>
+
+    <!-- jQuery UIのCSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+
+        .fixed-header {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+          }
+        
+          .fixed-header thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #fff; /* 背景色はテーブルのスタイルに合わせて変更してください */
+          }
+        
+          .fixed-header th,
+          .fixed-header td {
+            padding: 10px;
+            border: 1px solid #ddd; /* 枠線のスタイルは必要に応じて変更してください */
+          }
+        
+        
+          table {
+            /* width: 100%; */
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+          }
+          th {
+            background-color: #f2f2f2;
+          }
+        
+          html, body {
+          max-height: 100vh;
+          overflow-y: hidden; /* ウィンドウ全体の縦スクロールを無効化 */
+        }
+        
+          .scroll-container {
+          /* max-height: 100vh; */
+          height: 94vh; /* ビューポートの高さに合わせる */
+          overflow-x: auto;
+          overflow-y: auto; /* コンテナ内の縦スクロールを可能に */
+          white-space: nowrap;
+        }
+        
+        .fixed-header {
+          width: auto;
+          border-collapse: collapse;
+        }
+        
+        .fixed-header th,
+        .fixed-header td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+          min-width: 100px; /* 最小幅を指定することもできます */
+        }
+        
+        /* テーブルヘッダーの固定 */
+        .fixed-header th {
+          background-color: #f2f2f2;
+          position: sticky;
+          top: 0; /* 1行目のヘッダーを固定 */
+          z-index: 10;
+        }
+        
+        /* 2行目のヘッダーを固定 */
+        .fixed-header th.second-header {
+          top: 40px; /* この値は1行目のヘッダーの高さに応じて調整してください */
+          z-index: 10;
+        }
+        
+        /* 学籍番号の列と氏名の列 */
+        .fixed-header .sticky-col {
+          position: sticky;
+          left: 0;
+          z-index: 100;
+          background-color: #fff; /* 背景色はテーブルの背景色と同じにしてください */
+          top: 0; /* 追加：ヘッダーの上部と同じ位置に固定するため */
+        }
+
+        .max-width-cell {
+            max-width: 400px; /* または任意の最大幅に設定 */
+            white-space: pre-wrap; /* 空白と改行を保持して折り返す */
+            word-wrap: break-word; /* 長い単語も折り返す */
+            overflow-wrap: break-word; /* 長い単語が最大幅を超える場合に折り返す */
+          }
+
+        /* 選択中のセルのスタイル */
+        .ui-selecting,
+        .ui-selected {
+        background-color: #9fa8da;  /* ここで好きな色を指定してください */
+        color: white;
+        }
+          
+        </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">第{{ now_lesson_number }}回</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Questions
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            {% for item in dropdown_items %}
+                <!-- <a class="dropdown-item" href="{{ item.url }}">{{ item.name }}</a> -->
+                <a class="dropdown-item" href="{{ url_for('question', lesson_number=now_lesson_number, question_number=item.number) }}">{{ item.name }}</a>
+            {% endfor %}
+        </div>
+      </li>
+
+        <!-- 通常のリンクナビゲーションアイテム -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('upload') }}">Upload Files</a>
+        </li>
+
+        <!-- ドロップダウンを持たないナビゲーションアイテム -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('create_questions') }}">Create Questions Set</a>
+        </li>
+        <!-- n回目のレッスンにとぶリンク -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Lesson Number
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink1">
+            <!-- {% for number in lesson_numbers %}
+                <a class="dropdown-item" href="#">{{ number }}</a>
+            {% endfor %} -->
+            {% for number in lesson_numbers %}
+                <a class="dropdown-item" href="{{ url_for('student_responses', lesson_number=number) }}">{{ number }}</a>
+            {% endfor %}
+            <form method="post" action="{{ url_for('add_lesson') }}">
+                <input type="text" name="new_lesson_number">
+                <input type="submit" value="Lesson番号を追加">
+            </form>
+          </div>
+       </li>
+        <!-- 別のドロップダウンメニューを持つナビゲーションアイテム -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Services
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
+                <a class="dropdown-item" href="#">Web Design</a>
+                <a class="dropdown-item" href="#">Web Development</a>
+                <a class="dropdown-item" href="#">SEO</a>
+            </div>
+        </li>
+    </ul>
+  </div>
+</nav>
+
+
+
+
+<button id="show-all">全員</button>
+<button id="show-uploaded">アップロード済みの学生のみ</button>
+<!-- <button id="copyComments">講評をコピー</button> -->
+
+
+  <div class="scroll-container">
+    <table class="fixed-header" id="selectable-table">
+      
+    <thead>
+        <tr>
+        <th class="sticky-col" rowspan="2">学籍番号</th>
+        <th rowspan="2">氏名</th>
+        <th rowspan="2">講評</th>
+        {% for i in range(1, max_assignments) %}
+            <th colspan="1">{{ questions_name['' ~ i] }}</th>
+        {% endfor %}
+        </tr>
+        <tr>
+        {% for i in range(1, max_assignments) %}
+            <th class="second-header">点数</th>
+            <!-- <th class="second-header">減点箇所</th>
+            <th class="second-header">その他コメント</th> -->
+        {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for student_id, records in dict_data.items() %}
+        <tr class="{{ 'uploaded' if student_id in uploaded_students else '' }}">
+            <td class="sticky-col comment-cell">{{ student_id }}</td>
+            {% if student_id in uploaded_students %}
+                <td class="sticky-col comment-cell"><a href="{{ url_for('read_ipynb', filename=records['file_name'])}}">{{ students_list[student_id] }}</a></td>
+            {% else %}
+            <td class="sticky-col comment-cell" >{{ students_list[student_id] }}</td>
+            {% endif %}
+            <td class="max-width-cell comment-cell">{{ records['full_comment'] }}</td>
+            {% for i in range(1, max_assignments) %}
+            <td class="max-width-cell comment-cell">{{ records['' ~ i]['score'] }}</td>
+            <!-- <td>{{ records['' ~ i]['penalty_comment'] }}</td>
+            <td>{{ records['' ~ i]['comment'] }}</td> -->
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+  </div>
+
+
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // 既存のjQueryのready関数内のコード
+    
+        // Selectableプラグインをテーブルに適用
+        $('#selectable-table').selectable({
+            filter: 'td.comment-cell',
+            cancel: 'a',  // リンクをクリックしたときは選択をキャンセル
+            selected: function(event, ui) {
+                $(ui.selected).addClass('ui-selected');
+            },
+            unselected: function(event, ui) {
+                $(ui.unselected).removeClass('ui-selected');
+            }
+        });
+    
+    // Ctrl+Cが押されたときに選択されたセルをコピー
+    $(document).bind('keydown', function(e) {
+        if (e.ctrlKey && e.which == 67) {  // 67は'C'のキーコード
+
+            // 列のみを取得する
+            // var selectedText = $('.ui-selected', '#selectable-table').map(function() {
+            //    return '"' + $(this).text().replace(/"/g, '""') + '"'; // ダブルクォートで囲み、ダブルクォートをエスケープ
+            //}).get().join('\n'); // 改行で結合
+
+
+            // 選択された行の中からui-selectedクラスが付与されたセルのみを取得
+            var selectedText = $('.ui-selected').closest('tr').map(function() {
+                // ui-selectedクラスが付与されたセルのテキストをタブで結合
+                var cells = $(this).find('.ui-selected').map(function() {
+                    var text = $(this).text().replace(/"/g, '""'); // ダブルクォートをエスケープ
+                    return '"' + text + '"'; // 改行が含まれる可能性があるため、ダブルクォートで囲む
+                }).get().join('\t');
+                return cells;
+            }).get().join('\n'); // 行を改行で結合
+            
+
+            var textArea = document.createElement('textarea');
+            textArea.style.opacity = '0';  // 見えないようにする
+            textArea.value = selectedText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            // コピーが成功したことをユーザーに通知
+            // alert('選択した講評がクリップボードにコピーされました。');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
+

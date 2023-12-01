@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    {{ html_content | safe }}  <!-- Flaskから渡されたHTMLコンテンツを表示 -->
+
+    <script>
+        window.onload = function() {
+            var sectionId = "{{ section_id }}";
+            if (sectionId) {
+                var section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollIntoView();
+                }
+            }
+        };
+    </script>
+</body>
+</html>

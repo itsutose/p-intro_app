@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Start</title>
+</head>
+<body>
+    <form method="POST">
+        <select name="lesson_number">
+            {% for number in lesson_numbers %}
+            <option value="{{ number }}">{{ number }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

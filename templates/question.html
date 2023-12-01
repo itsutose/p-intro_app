@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+        <!-- Inline CSS to add borders to table cells and make table header sticky -->
+        <style>
+
+        /* Show dropdown on hover */
+        .navbar .dropdown:hover > .dropdown-menu {
+            display: block;
+            overflow: visible;
+        }
+
+
+        /* ナビゲーションバーを常に上部に固定 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;  /* ナビゲーションバーの幅を全体の100%に設定 */
+            overflow: visible;  /* 追加 */
+            z-index: 2000;  /* 他の要素の上に表示するためのz-index */
+        }
+
+         /* ドロップダウンメニューのz-indexを調整 */
+        .dropdown-menu {
+            z-index: 2100;  /* .navbarよりも高い値に設定 */
+        }
+
+        /* ナビゲーションバーの下にコンテンツを配置 */
+        body {
+            padding-top: 15px;  /* ナビゲーションバーの高さ（例：56px）に合わせて調整することができます */
+        }
+
+        .table-bordered td, .table-bordered th {
+            border: 2px solid #000000;
+        }
+        /* Add styles for sticky table header */
+        .scrollable-table {
+            height: 1800px;  /* Adjust this value according to your needs */
+            overflow-y: auto;
+            display: block;
+        }
+        .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background-color: #343a40;  /* Same as thead-dark background color */
+        }
+        
+       /* Added Style for table width */
+        .table-responsive {
+            box-sizing: content-box; /* 追加 */
+            width: 100%;
+            padding-right: 0 !important; 
+            margin-right: 0 !important;  
+        } 
+        .table {
+            table-layout: auto;  /* セルの内容に基づいて列の幅を自動的に調整 */
+        }
+        
+        .table td {
+            white-space: pre;  /* セルの内容のスペースやインデントを維持 */
+            overflow: auto;  /* 必要に応じてスクロールバーを表示 */
+        }
+
+        .table-responsive {
+            height: calc(100vh - 56px);  /* ナビゲーションバーの高さを引く */
+            overflow-y: auto;
+            width: 100vw;
+            overflow-x: auto;
+        }
+
+        /* テーブルの高さをコンテナの高さに合わせる */
+        .scrollable-table {
+            max-height: 100%;
+        }
+        
+        /* コンテナの縦の高さと幅をウィンドウの最大サイズに設定 */
+        .container {
+            height: 95vh;
+            width: 100vw;
+            max-width: 100%;  /* Bootstrapのデフォルトのmax-widthをオーバーライド */
+            max-height: 95%;
+            overflow: hidden;  /* 必要に応じてスクロールバーを非表示にする */
+        }
+
+        .wrap-text {
+            white-space: normal; /* テキストを折り返す */
+          }
+
+        .max-width-cell {
+            max-width: 1000px; /* ここに設定したい最大幅を指定 */
+            white-space: nowrap; /* 内容を折り返さない */
+            overflow: hidden; /* 内容がセルからはみ出したら非表示にする */
+            text-overflow: ellipsis; /* はみ出た内容を省略記号で表す */
+        }
+
+
+          
+</style>
+</head>
+<body>
+
+    <!-- Navigation bar starts here -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- <a class="navbar-brand" href="/">Home</a> -->
+    <a class="navbar-brand" href="{{ url_for('student_responses', lesson_number=now_lesson_number) }}">Home</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Questions
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for item in dropdown_items %}
+                        <!-- <a class="dropdown-item" href="{{ item.url }}">{{ item.name }}</a> -->
+                        <a class="dropdown-item" href="{{ url_for('question', lesson_number=now_lesson_number, question_number=item.number) }}">{{ item.name }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            <!-- ... rest of your navigation items ... -->
+        </ul>
+    </div>
+</nav>
+<!-- Navigation bar ends here -->
+
+
+
+<script>
+    $(document).ready(function() {
+        $(".table").colResizable({
+            liveDrag: true,
+            gripInnerHtml: "<div class='grip'></div>",
+            draggingClass: "dragging",
+            onResize: function() {
+                // テーブルの現在の幅を取得
+                var tableWidth = $(".table").outerWidth();
+                $(".table-responsive").width(tableWidth);
+            },
+            resizeMode: 'overflow'
+        });
+    });
+</script>
+        
+    <div class="container mt-5">
+        <!-- ここからフォーム開始 -->
+        <!-- <form method="post" action="/{{ number }}"> -->
+        <form method="post" action="{{ url_for('question', lesson_number=lesson_number, question_number=number) }}">
+            <div class="table-responsive">
+                <table class="table  scrollable-table table-bordered" style = "min-width: 1900.0px; width: 1900.0px;">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>学籍番号</th>
+                            <th>氏名</th>
+                            {% for column in minimal_data.columns %}
+                                {% if column in ["student_id", "student_name", "file_name"] %}
+                                
+                                {% elif 'unique' not in column and column not in ['score', 'penalty_comment', 'comment']%}
+                                <th>{{ column }}</th>
+                                {% endif %}
+                            {% endfor %}
+                            <th>点数
+                                <button type="submit" class="btn btn-primary">Export Scores</button>  <!-- 送信ボタン -->
+                            </th>
+                            <th>減点箇所
+                                <button type="submit" class="btn btn-primary">Export</button> 
+                            </th>
+                            <th>その他コメント
+                                <button type="submit" class="btn btn-primary">Export</button>  <!-- 送信ボタン -->
+                            </th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for _, row in minimal_data.iterrows() %}
+                        {% set student_id = row['student_id']%}
+                  
+                        <tr>
+                            <td>{{row["student_id"]}}</td>
+                            <td><a href="{{ url_for('read_ipynb', filename=row['file_name'], question_number=number)}}">{{ row["student_name"] }}</a></td>
+                            {% set ns = namespace(color='white') %}
+                            {% for column in row.index %}
+                                {% if column in ["student_id", "student_name", "file_name"] %}
+                               
+                                {% elif "unique" in column  %}
+                                    {% if row[column] == 1%}
+                                       {% set ns.color = 'pink' %}
+                                    {% elif row[column] == 2%}
+                                        {% set ns.color = 'skyblue' %}
+                                    {% elif row[column] == 3%}
+                                        {% set ns.color = 'lightgreen' %}
+                                    {% endif %}
+                                    
+                                {% elif column not in ['score', 'penalty_comment', 'comment'] %}
+                                    {% if ns.color == 'pink' %}
+                                        <td class="max-width-cell" style="background-color: pink;"><pre><code>{{ row[column] }}</code></pre></td>
+                                        {% set ns.color = 'white' %}
+                                    {% elif ns.color == 'skyblue' %}
+                                        <td class="max-width-cell" style="background-color: skyblue;"><pre><code>{{ row[column] }}</code></pre></td>
+                                        {% set ns.color = 'white' %}
+                                    {% elif ns.color == 'lightgreen' %}
+                                        <td class="max-width-cell" style="background-color: lightgreen;"><pre><code>{{ row[column] }}</code></pre></td>
+                                        {% set ns.color = 'white' %}
+                                    {% else %}
+                                        <!-- <td><pre><code>{{ row[column] }}</code></pre></td> -->
+                                        <td class="max-width-cell"><pre><code>{{ row[column] }}</code></pre></td>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <td><textarea name="score_{{ student_id, number|int }}" class="score-input" rows="3" style="width: 100%; height: 100px;">{{ row['score'] }}</textarea></td>
+                            <td><textarea name="GentenComments_{{ student_id, number|int }}" class="penalty_comment-input" rows="3" style="width: 100%; height: 270px;">{{ row['penalty_comment'] }}</textarea></td>
+                            <td><textarea name="comments_{{ student_id, number|int }}" class="comment-input" rows="3" style="width: 100%; height: 270px;">{{ row['comment'] }}</textarea></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- colResizable script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js"></script>
+      
+    <script>
+        $(document).ready(function() {
+            $(".table").colResizable();
+        });
+    </script>
+</body>
+</html>
